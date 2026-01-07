@@ -2,10 +2,12 @@ package handleDatabase
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/glebarez/sqlite"
 	"github.com/mauuBi/ToDoListGolang/structHandler"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Task structhandler.Task
@@ -14,13 +16,15 @@ func (t Task) String() string{
 	return fmt.Sprintf("Task title: %s, User id: %d, Task is done: %+v", t.NameOfTask, t.UserId, t.Done)
 }
 
-func CreateAndMigrateDB() gorm.DB{
-	var db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
+func CreateAndMigrateDB() *gorm.DB{
+	var db, err = gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent), 
+	})
 	if err != nil{
 		panic(err)
 	}
 	db.AutoMigrate(&Task{})
-	return *db
+	return db
 }
 
 func CreateTask(db *gorm.DB, newFd uint, newNameOfTask string) Task{
@@ -33,16 +37,34 @@ func CreateTask(db *gorm.DB, newFd uint, newNameOfTask string) Task{
 	if result.Error != nil{
 		panic(result.Error)
 	}
-	fmt.Printf("Nombre de tâches ajoutées : %d\n", result.RowsAffected)
 	return newTask
 }
 
-func GetTask(db *gorm.DB, IdToFind uint) Task{
-	targetTask := Task{UserId: IdToFind}
-	if res := db.First(&targetTask); res.Error != nil{
-		fmt.Println("JE SUIS LA")
-
-		panic(res.Error)
+func GetTask(db *gorm.DB, IdToFind uint) []Task{
+	var tasks []Task
+	res := db.Where("user_id = ?", IdToFind).Find(&tasks)
+	if len(tasks) < 1 {
+		log.Fatalln("Erreur lors de la récupération :", res.Error)
 	}
-	return targetTask
+	return tasks
 }
+
+func CheckEmptyDatabase(db *gorm.DB) bool{
+	var tasks []Task
+	res := db.First(&tasks, 1)
+	if len(tasks) < 1 || res.Error != nil{
+		return true
+	}
+	return false
+}
+
+func PrintAllTask(db *gorm.DB){
+	var tasks []Task
+	res := db.Find(&tasks)
+	if res != nil{}
+	for _, r := range tasks{
+		fmt.Println(r)
+	}
+}
+
+// Supprime toutes les tâches de l'utilisateur qui portent ce nom
