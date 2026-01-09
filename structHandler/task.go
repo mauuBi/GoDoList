@@ -6,7 +6,7 @@ import (
 
 type Task struct{
 	gorm.Model
-	UserId uint
+	NameOfUser string
 	NameOfTask string
 	Done bool
 }

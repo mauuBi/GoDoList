@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	"github.com/mauuBi/ToDoListGolang/handleDatabase"
-	"github.com/mauuBi/ToDoListGolang/handleinput"
+	"github.com/mauuBi/ToDoListGolang/handleInput"
 )
 
 func main(){
 	db := handleDatabase.CreateAndMigrateDB()
+	handleDatabase.PrintAllTask(db)
 	fmt.Println("Welcome to your ToDoList !")
 	var input string
-	hashMapName := map[string]uint{}
 	for {
-		handleInput.WelcomeMessage(db)
+		handleinput.WelcomeMessage(db)
 		_, err := fmt.Scan(&input)
 		if err != nil{
 			fmt.Println(err)
@@ -23,6 +23,6 @@ func main(){
             fmt.Println("Au revoir !")
             break // On sort de la boucle
         } 
-		handleInput.HandleInput(db, input, hashMapName)
+		handleinput.HandleInput(db, input)
 	}
 }

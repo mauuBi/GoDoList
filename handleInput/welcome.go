@@ -1,4 +1,4 @@
-package handleInput
+package handleinput
 
 import (
 	"fmt"

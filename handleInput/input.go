@@ -1,22 +1,18 @@
-package handleInput
+package handleinput
 
 import (
 	"strings"
 
-	donetask "github.com/mauuBi/ToDoListGolang/handleInput/doneTask"
-	"github.com/mauuBi/ToDoListGolang/handleInput/newTask"
-	seetasks "github.com/mauuBi/ToDoListGolang/handleInput/seeTasks"
 	"gorm.io/gorm"
 )
 
-
-func HandleInput(db *gorm.DB, input string, hashMap map[string]uint){
+func HandleInput(db *gorm.DB, input string){
 	switch strings.ToLower(input) {
 	case "new task", "nt":
-		newtask.HandlingNewTask(db, hashMap)
+		HandlingNewTask(db)
 	case "see tasks", "st":
-		seetasks.SeeTasksForOneUser(db, hashMap)
+		SeeTasksForOneUser(db)
 	case "done tasks", "dt":
-		donetask.DeleteTask(db, hashMap)
+		DeleteTask(db)
 	}
 }

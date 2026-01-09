@@ -2,7 +2,6 @@ package handleDatabase
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/glebarez/sqlite"
 	"github.com/mauuBi/ToDoListGolang/structHandler"
@@ -13,7 +12,7 @@ import (
 type Task structhandler.Task
 
 func (t Task) String() string{
-	return fmt.Sprintf("Task title: %s, User id: %d, Task is done: %+v", t.NameOfTask, t.UserId, t.Done)
+	return fmt.Sprintf("This user need to %s", t.NameOfTask)
 }
 
 func CreateAndMigrateDB() *gorm.DB{
@@ -27,9 +26,9 @@ func CreateAndMigrateDB() *gorm.DB{
 	return db
 }
 
-func CreateTask(db *gorm.DB, newFd uint, newNameOfTask string) Task{
+func CreateTask(db *gorm.DB, nameOfUser string, newNameOfTask string) Task{
 	newTask := Task{
-		UserId: newFd,
+		NameOfUser: nameOfUser,
 		NameOfTask: newNameOfTask,
 		Done: false,
 	}
@@ -42,11 +41,13 @@ func CreateTask(db *gorm.DB, newFd uint, newNameOfTask string) Task{
 
 func GetTask(db *gorm.DB, IdToFind uint) []Task{
 	var tasks []Task
-	res := db.Where("user_id = ?", IdToFind).Find(&tasks)
-	if len(tasks) < 1 {
-		log.Fatalln("Erreur lors de la récupération :", res.Error)
-	}
+	db.Model(&Task{}).Where("user_id = ?", IdToFind).Find(&tasks)
 	return tasks
+	// res := db.Where("user_id = ?", IdToFind).Find()
+	// if len(tasks) < 1 {
+	// 	log.Fatalln("Erreur lors de la récupération :", res.Error)
+	// }
+	// return tasks
 }
 
 func CheckEmptyDatabase(db *gorm.DB) bool{
